@@ -6,3 +6,5 @@ let create: (string, string) => t;
 
 /* Use a program to render objects. */
 let use: t => unit;
+
+let getAttrib: (t, string) => GLTypes.attrib;

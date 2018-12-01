@@ -8,6 +8,10 @@ module type ApplicationType = (App: ApplicationOptionsType) => {
   let start: unit => unit;
 };
 
+[@bs.send] external clearColor : (GLTypes.context, float, float, float, float) => unit = "clearColor";
+[@bs.send] external clear : (GLTypes.context, int) => unit = "clear";
+[@bs.send] external viewport : (GLTypes.context, int, int, int, int) => unit = "viewport";
+
 module Application = (App: ApplicationOptionsType) => {
   [@bs.val] external requestAnimationFrame : (float => unit) => unit = "";
 
@@ -18,10 +22,10 @@ module Application = (App: ApplicationOptionsType) => {
     App.update(dt);
 
     /* Clear the screen and update the view port on every update. */
-    GLContext.clearColor(ctx, 0.0, 0.0, 0.0, 1.0);
-    GLContext.clear(ctx, GLConsts.colorBufferBit);
+    viewport(Canvas.context, 0, 0, Canvas.width(), Canvas.height());
+    clearColor(ctx, 0.0, 0.0, 0.0, 1.0);
+    clear(ctx, GLConsts.colorBufferBit);
 
-    GLContext.viewport(Canvas.context, 0, 0, Canvas.width(), Canvas.height());
 
     App.draw();
   }
@@ -31,6 +35,7 @@ module Application = (App: ApplicationOptionsType) => {
     /* Setup canvas and context for rendering. */
     Canvas.resize();
     App.setup();
+
 
     /* Run application main loop. */
     /* It receives the previous timestamp from the last animation frame. */

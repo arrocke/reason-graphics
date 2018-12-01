@@ -1,8 +1,3 @@
-type attribLocation;
-[@bs.send] external getAttribLocation : (GLContext.t, ShaderProgram.t, string) => attribLocation = "getAttribLocation";
-[@bs.send] external enableVertexAttribArray : (GLContext.t, attribLocation) => unit = "enableVertexAttribArray";
-[@bs.send] external vertexAttribPointer : (GLContext.t, attribLocation, int, int, bool, int, int) => unit = "vertexAttribPointer";
-
 module TestApp = Graphics.Application({
   let vSource = {|
     // an attribute will receive data from a buffer
@@ -30,43 +25,19 @@ module TestApp = Graphics.Application({
   |}
 
   let program = ShaderProgram.create(vSource, fSource);
-  ShaderProgram.use(program);
+
+  let m1 = Mesh.setVertices(Mesh.create(), [
+    Point3.create(0., 0., 0.),
+    Point3.create(0., 0.5, 0.),
+    Point3.create(0.7, 0.0, 0.)
+  ]);
 
   let setup = () => ();
   let update = (dt) => ();
   let draw = () => {
-    let ctx = Canvas.context;
-    let positionAttribLocation = getAttribLocation(ctx, program, "a_position");
-
-    let positions = [|
-      0., 0.,
-      0., 0.5,
-      0.7, 0.0
-    |];
-
-    let buffer = GLContext.createBuffer(ctx);
-    GLContext.bindBuffer(ctx, GLConsts.arrayBuffer, buffer);
-    GLContext.bufferData(ctx, GLConsts.arrayBuffer, GLContext.createFloat32Array(positions), GLConsts.staticDraw);
-
-    enableVertexAttribArray(ctx, positionAttribLocation);
-
-    GLContext.bindBuffer(ctx, GLConsts.arrayBuffer, buffer);
-    vertexAttribPointer(ctx, positionAttribLocation, 2, GLConsts.float, false, 0, 0);
-    GLContext.drawArrays(ctx, GLConsts.triangles, 0, 3);
+    ShaderProgram.use(program);
+    Mesh.draw(m1, program);
   };
 });
 
 TestApp.start();
-
-/*
-let run = ctx => {
-
-
-};
-
-switch(Canvas.context(c)) {
-| Some(ctx) => run(ctx)
-| None => Js.log("WebGL not supported.");
-};
-
-*/
