@@ -1,52 +1,10 @@
+type attribLocation;
+[@bs.send] external getAttribLocation : (GLContext.t, ShaderProgram.t, string) => attribLocation = "getAttribLocation";
+[@bs.send] external enableVertexAttribArray : (GLContext.t, attribLocation) => unit = "enableVertexAttribArray";
+[@bs.send] external vertexAttribPointer : (GLContext.t, attribLocation, int, int, bool, int, int) => unit = "vertexAttribPointer";
+
 module TestApp = Graphics.Application({
-  let setup = () => ();
-  let update = (dt) => ();
-  let draw = () => ();
-});
-
-TestApp.start();
-
-/*
-let c = Canvas.findById("gl-canvas");
-
-let loadShader = (ctx, shaderType, source) => {
-  let shader = GLContext.createShader(ctx, shaderType);
-  GLContext.shaderSource(ctx, shader, source);
-  GLContext.compileShader(ctx, shader);
-  if (!GLContext.getBooleanShaderParameter(ctx, shader, GLConsts.compileStatus)) {
-    Js.log("An error occured compiling the shaders: " ++ GLContext.getShaderInfoLog(ctx, shader));
-    GLContext.deleteShader(ctx, shader);
-    None;
-  } else {
-    Some(shader);
-  }
-}
-
-let initShaderProgram = (ctx, vsSource, fsSource) => {
-  let vertexShader = loadShader(ctx, GLConsts.vertexShader, vsSource);
-  let fragmentShader = loadShader(ctx, GLConsts.fragmentShader, fsSource);
-
-  if (vertexShader == None || fragmentShader == None) {
-    None;
-  } else {
-    let Some(vertexShader) = vertexShader;
-    let Some(fragmentShader) = fragmentShader;
-    let shaderProgram = GLContext.createProgram(ctx);
-    GLContext.attachShader(ctx, shaderProgram, vertexShader);
-    GLContext.attachShader(ctx, shaderProgram, fragmentShader);
-    GLContext.linkProgram(ctx, shaderProgram);
-
-    if (!GLContext.getBooleanProgramParameter(ctx, shaderProgram, GLConsts.linkStatus)) {
-      Js.log("Unable to initialize the shader program: " ++ GLContext.getProgramInfoLog(ctx, shaderProgram));
-      None;
-    } else {
-      Some(shaderProgram);
-    }
-  }
-}
-
-let run = ctx => {
-  let vertexSource = {|
+  let vSource = {|
     // an attribute will receive data from a buffer
     attribute vec4 a_position;
   
@@ -59,7 +17,7 @@ let run = ctx => {
     }
   |};
 
-  let fragmentSource = {|
+  let fSource = {|
     // fragment shaders don't have a default precision so we need
     // to pick one. mediump is a good default
     precision mediump float;
@@ -71,31 +29,39 @@ let run = ctx => {
     }
   |}
 
-  let Some(program) = initShaderProgram(ctx, vertexSource, fragmentSource);
+  let program = ShaderProgram.create(vSource, fSource);
+  ShaderProgram.use(program);
 
-  let positionAttribLocation = GLContext.getAttribLocation(ctx, program, "a_position");
+  let setup = () => ();
+  let update = (dt) => ();
+  let draw = () => {
+    let ctx = Canvas.context;
+    let positionAttribLocation = getAttribLocation(ctx, program, "a_position");
 
-  let positions = [|
-    0., 0.,
-    0., 0.5,
-    0.7, 0.0
-  |];
+    let positions = [|
+      0., 0.,
+      0., 0.5,
+      0.7, 0.0
+    |];
 
-  let buffer = GLContext.createBuffer(ctx);
-  GLContext.bindBuffer(ctx, GLConsts.arrayBuffer, buffer);
-  GLContext.bufferData(ctx, GLConsts.arrayBuffer, GLContext.createFloat32Array(positions), GLConsts.staticDraw);
+    let buffer = GLContext.createBuffer(ctx);
+    GLContext.bindBuffer(ctx, GLConsts.arrayBuffer, buffer);
+    GLContext.bufferData(ctx, GLConsts.arrayBuffer, GLContext.createFloat32Array(positions), GLConsts.staticDraw);
 
-  Canvas.resize(c);
-  GLContext.viewport(ctx, 0, 0, Canvas.width(c), Canvas.height(c));
-  GLContext.clearColor(ctx, 0.0, 0.0, 0.0, 1.0);
-  GLContext.clear(ctx, GLConsts.colorBufferBit);
+    enableVertexAttribArray(ctx, positionAttribLocation);
 
-  GLContext.useProgram(ctx, program);
-  GLContext.enableVertexAttribArray(ctx, positionAttribLocation);
+    GLContext.bindBuffer(ctx, GLConsts.arrayBuffer, buffer);
+    vertexAttribPointer(ctx, positionAttribLocation, 2, GLConsts.float, false, 0, 0);
+    GLContext.drawArrays(ctx, GLConsts.triangles, 0, 3);
+  };
+});
 
-  GLContext.bindBuffer(ctx, GLConsts.arrayBuffer, buffer);
-  GLContext.vertexAttribPointer(ctx, positionAttribLocation, 2, GLConsts.float, false, 0, 0);
-  GLContext.drawArrays(ctx, GLConsts.triangles, 0, 3);
+TestApp.start();
+
+/*
+let run = ctx => {
+
+
 };
 
 switch(Canvas.context(c)) {

@@ -29,11 +29,6 @@ type typedArray;
 [@bs.send] external createBuffer : (t) => buffer = "createBuffer";
 [@bs.send] external bindBuffer : (t, int, buffer) => unit = "bindBuffer";
 [@bs.send] external bufferData : (t, int, typedArray, int) => unit = "bufferData";
-
-[@bs.send] external getAttribLocation : (t, program, string) => attribLocation = "getAttribLocation";
-[@bs.send] external enableVertexAttribArray : (t, attribLocation) => unit = "enableVertexAttribArray";
-
-[@bs.send] external vertexAttribPointer : (t, attribLocation, int, int, bool, int, int) => unit = "vertexAttribPointer";
 [@bs.send] external drawArrays : (t, int, int, int) => unit = "drawArrays";
 
 [@bs.new] external createFloat32Array : (array(float)) => typedArray = "Float32Array"

@@ -17,9 +17,11 @@ module Application = (App: ApplicationOptionsType) => {
   let update = (dt) => {
     App.update(dt);
 
-    /* Clear the screen on every update. */
+    /* Clear the screen and update the view port on every update. */
     GLContext.clearColor(ctx, 0.0, 0.0, 0.0, 1.0);
     GLContext.clear(ctx, GLConsts.colorBufferBit);
+
+    GLContext.viewport(Canvas.context, 0, 0, Canvas.width(), Canvas.height());
 
     App.draw();
   }
