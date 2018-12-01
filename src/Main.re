@@ -1,3 +1,12 @@
+module TestApp = Graphics.Application({
+  let setup = () => ();
+  let update = (dt) => ();
+  let draw = () => ();
+});
+
+TestApp.start();
+
+/*
 let c = Canvas.findById("gl-canvas");
 
 let loadShader = (ctx, shaderType, source) => {
@@ -94,3 +103,4 @@ switch(Canvas.context(c)) {
 | None => Js.log("WebGL not supported.");
 };
 
+*/
