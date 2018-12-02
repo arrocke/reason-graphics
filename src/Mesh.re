@@ -39,14 +39,14 @@ let setVertices = (mesh, vertices) => {
 let updateGL = (mesh, program) => {
   bindBuffer(Canvas.context, GLConsts.arrayBuffer, mesh.vertexBuffer);
   let vertexArray = List.fold_left(
-    (verts, v) => [Point3.y(v), Point3.x(v), ...verts],
+    (verts, v) => [Point3.z(v), Point3.y(v), Point3.x(v), ...verts],
     [], mesh.vertices)
     |> List.rev |> Array.of_list |> createTypedArray;
   bufferData(Canvas.context, GLConsts.arrayBuffer, vertexArray, GLConsts.staticDraw);
   let vertexAttrib = ShaderProgram.getAttrib(program, "a_position");
   enableVertexAttribArray(Canvas.context, vertexAttrib);
   bindBuffer(Canvas.context, GLConsts.arrayBuffer, mesh.vertexBuffer);
-  vertexAttribPointer(Canvas.context, vertexAttrib, 2, GLConsts.float, false, 0, 0);
+  vertexAttribPointer(Canvas.context, vertexAttrib, 3, GLConsts.float, false, 0, 0);
   mesh.dirty = false
 };
 
