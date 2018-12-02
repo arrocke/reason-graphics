@@ -1,11 +1,12 @@
 /* Defines a WebGL application. */
 module type ApplicationOptionsType = {
+  type state;
   /* Runs once to setup the WebGL environment. */
-  let setup: unit => unit;
+  let setup: unit => state;
   /* Runs on every animation frame updating the simulation. */
-  let update: float => unit;
+  let update: (state, float) => state;
   /* Draws the canvas using WebGL. */
-  let draw: unit => unit;
+  let draw: state => state;
 };
 
 /* Runs the application. */

@@ -4,7 +4,7 @@ type t = {
   vertices: list(Point3.t),
   vertexCount: int,
   vertexBuffer: GLTypes.buffer,
-  mutable dirty: bool
+  dirty: bool
 };
 
 [@bs.send] external createBuffer : (GLTypes.context) => GLTypes.buffer = "createBuffer";
@@ -47,12 +47,19 @@ let updateGL = (mesh, program) => {
   enableVertexAttribArray(Canvas.context, vertexAttrib);
   bindBuffer(Canvas.context, GLConsts.arrayBuffer, mesh.vertexBuffer);
   vertexAttribPointer(Canvas.context, vertexAttrib, 3, GLConsts.float, false, 0, 0);
-  mesh.dirty = false
+  {
+    ...mesh,
+    dirty: true
+  }
 };
 
 let draw = (mesh, program) => {
-  if (mesh.dirty) {
-    updateGL(mesh, program);
-  }
+  let updatedMesh = 
+    if (mesh.dirty) {
+      updateGL(mesh, program);
+    } else {
+      mesh;
+    }
   drawArrays(Canvas.context, GLConsts.triangles, 0, mesh.vertexCount);
+  updatedMesh;
 }

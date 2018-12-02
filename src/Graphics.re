@@ -1,7 +1,8 @@
 module type ApplicationOptionsType = {
-  let setup: unit => unit;
-  let update: float => unit;
-  let draw: unit => unit;
+  type state;
+  let setup: unit => state;
+  let update: (state, float) => state;
+  let draw: state => state;
 };
 
 module type ApplicationType = (App: ApplicationOptionsType) => {
@@ -18,8 +19,8 @@ module Application = (App: ApplicationOptionsType) => {
   let ctx = Canvas.context;
 
   /* Update method that runs every on every animation frame. */
-  let update = (dt) => {
-    App.update(dt);
+  let update = (state, dt) => {
+    let newState = App.update(state, dt);
 
     /* Clear the screen and update the view port on every update. */
     viewport(Canvas.context, 0, 0, Canvas.width(), Canvas.height());
@@ -27,27 +28,26 @@ module Application = (App: ApplicationOptionsType) => {
     clear(ctx, GLConsts.colorBufferBit);
 
 
-    App.draw();
+    App.draw(newState);
   }
 
   /* Runs the application. */
   let start = () => {
     /* Setup canvas and context for rendering. */
     Canvas.resize();
-    App.setup();
-
+    let state = App.setup();
 
     /* Run application main loop. */
     /* It receives the previous timestamp from the last animation frame. */
     /*   and the current timestamp from the current animation frame. */
-    let rec step = (lastTimestamp, currentTimestamp) => {
-      update(currentTimestamp -. lastTimestamp);
-      requestAnimationFrame(step(currentTimestamp));
+    let rec step = (state, lastTimestamp, currentTimestamp) => {
+      let newState = update(state, currentTimestamp -. lastTimestamp);
+      requestAnimationFrame(step(newState, currentTimestamp));
     }
     /* First frame has zero elapsed time. */
     requestAnimationFrame((currentTimestamp) => {
-      update(0.0);
-      requestAnimationFrame(step(currentTimestamp));
+      let newState = update(state, 0.0);
+      requestAnimationFrame(step(newState, currentTimestamp));
     });
   }
 }

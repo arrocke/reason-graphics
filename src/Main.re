@@ -1,4 +1,8 @@
 module TestApp = Graphics.Application({
+  type state = {
+    m: Mesh.t
+  };
+
   let vSource = {|
     // an attribute will receive data from a buffer
     attribute vec4 a_position;
@@ -22,21 +26,27 @@ module TestApp = Graphics.Application({
       // is responsible for setting
       gl_FragColor = vec4(1, 0, 0.5, 1); // return redish-purple
     }
-  |}
+  |};
 
   let program = ShaderProgram.create(vSource, fSource);
 
-  let m1 = Mesh.setVertices(Mesh.create(), [
-    Point3.create(0., 0., 0.),
-    Point3.create(0., 0.5, 0.),
-    Point3.create(0.7, 0.0, 0.)
-  ]);
+  let setup = () => {
+    m: Mesh.setVertices(Mesh.create(), [
+      Point3.create(0., 0., 0.),
+      Point3.create(0., 0.5, 0.),
+      Point3.create(0.7, 0.0, 0.)
+    ])
+  };
 
-  let setup = () => ();
-  let update = (dt) => ();
-  let draw = () => {
+  let update = (state, dt) => state;
+
+  let draw = (state) => {
     ShaderProgram.use(program);
-    Mesh.draw(m1, program);
+    let m = Mesh.draw(state.m, program);
+    {
+      ...state,
+      m
+    };
   };
 });
 
