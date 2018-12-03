@@ -3,15 +3,15 @@ type t = {
 };
 
 let defaultVertexSource = {|
-  // an attribute will receive data from a buffer
-  attribute vec4 a_position;
+  attribute vec3 position;
 
-  // all shaders have a main function
+  uniform mat4 ModelMatrix; 
+  uniform mat4 ViewMatrix; 
+  uniform mat4 ProjectionMatrix; 
+  uniform mat4 NormalMatrix; 
+
   void main() {
-
-    // gl_Position is a special variable a vertex shader
-    // is responsible for setting
-    gl_Position = a_position;
+    gl_Position	= ProjectionMatrix * ViewMatrix * ModelMatrix * vec4(position, 1); 
   }
 |};
 
@@ -31,7 +31,16 @@ let default = () => {
   program: ShaderProgram.create(defaultVertexSource, defaultFragmentSource)
 };
 
-let drawMesh = (renderer, mesh) => {
+let use = (renderer, model, view, projection) => {
   ShaderProgram.use(renderer.program);
+  let normalMatrix = Matrix.multiply(view, model) |> Matrix.inverse |> Matrix.transpose;
+  ShaderProgram.setMatrix4Uniform(renderer.program, "ModelMatrix", model);
+  ShaderProgram.setMatrix4Uniform(renderer.program, "ViewMatrix", view);
+  ShaderProgram.setMatrix4Uniform(renderer.program, "ProjectionMatrix", projection);
+  ShaderProgram.setMatrix4Uniform(renderer.program, "NormalMatrix", normalMatrix);
+};
+
+let drawMesh = (renderer, model, view, projection, mesh) => {
+  use(renderer, model, view, projection);
   Mesh.draw(mesh, renderer.program);
 }

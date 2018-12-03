@@ -32,3 +32,4 @@ let resize = () => {
 
 let width = () => widthGet(canvas);
 let height = () => heightGet(canvas);
+let aspect = () => float_of_int(width()) /. float_of_int(height());

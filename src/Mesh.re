@@ -36,7 +36,7 @@ let updateGL = (mesh, program) => {
     [], mesh.vertices)
     |> List.rev |> Array.of_list |> GLInterface.createTypedArray;
   GLInterface.bufferData(Canvas.context, GLConsts.arrayBuffer, vertexArray, GLConsts.staticDraw);
-  let vertexAttrib = ShaderProgram.getAttrib(program, "a_position");
+  let vertexAttrib = ShaderProgram.getAttrib(program, "position");
   GLInterface.enableVertexAttribArray(Canvas.context, vertexAttrib);
   GLInterface.bindBuffer(Canvas.context, GLConsts.arrayBuffer, mesh.vertexBuffer);
   GLInterface.vertexAttribPointer(Canvas.context, vertexAttrib, 3, GLConsts.float, false, 0, 0);

@@ -51,3 +51,9 @@ let create = (vSource, fSource) => {
 let use = p => GLInterface.useProgram(Canvas.context, p.program);
 
 let getAttrib = p => GLInterface.getAttribLocation(Canvas.context, p.program);
+
+let setMatrix4Uniform = (p, name, value) => {
+  use(p);
+  let loc = GLInterface.getUniformLocation(Canvas.context, p.program, name);
+  GLInterface.uniformMatrix4fv(Canvas.context, loc, false, GLInterface.createTypedArray(Matrix.array_of_matrix(value)));
+}

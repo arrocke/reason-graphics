@@ -8,3 +8,5 @@ let create: (string, string) => t;
 let use: t => unit;
 
 let getAttrib: (t, string) => GLInterface.attrib;
+
+let setMatrix4Uniform: (t, string, Matrix.t) => unit;
