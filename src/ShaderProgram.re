@@ -1,64 +1,53 @@
-type t;
-
-[@bs.send] external createProgram : (GLTypes.context) => t = "createProgram";
-[@bs.send] external attachShader : (GLTypes.context, t, GLTypes.shader) => unit = "attachShader";
-[@bs.send] external detachShader : (GLTypes.context, t, GLTypes.shader) => unit = "detachShader";
-[@bs.send] external linkProgram : (GLTypes.context, t) => unit = "linkProgram";
-[@bs.send] external getBooleanProgramParameter : (GLTypes.context, t, int) => bool = "getProgramParameter";
-[@bs.send] external getProgramInfoLog : (GLTypes.context, t) => string = "getProgramInfoLog";
-[@bs.send] external useProgram : (GLTypes.context, t) => unit = "useProgram";
-[@bs.send] external deleteProgram : (GLTypes.context, t) => unit = "deleteProgram";
-
-[@bs.send] external createShader : (GLTypes.context, int) => GLTypes.shader = "createShader";
-[@bs.send] external shaderSource : (GLTypes.context, GLTypes.shader, string) => unit = "shaderSource";
-[@bs.send] external compileShader : (GLTypes.context, GLTypes.shader) => unit = "compileShader";
-[@bs.send] external deleteShader : (GLTypes.context, GLTypes.shader) => unit = "deleteShader";
-[@bs.send] external getBooleanShaderParameter : (GLTypes.context, GLTypes.shader, int) => bool = "getShaderParameter";
-[@bs.send] external getShaderInfoLog : (GLTypes.context, GLTypes.shader) => string = "getShaderInfoLog";
-
-[@bs.send] external getAttribLocation : (GLTypes.context, t, string) => GLTypes.attrib = "getAttribLocation";
-
+type t = {
+  program: GLInterface.program,
+  vertexShader: GLInterface.shader,
+  fragmentShader: GLInterface.shader
+};
 
 exception ShaderCompileError(string);
 exception ProgramLinkError(string);
 
 let createShader = (source, shaderType) => {
-  let shader = createShader(Canvas.context, shaderType); /* Previous binding. */
-  shaderSource(Canvas.context, shader, source);
-  compileShader(Canvas.context, shader);
+  let shader = GLInterface.createShader(Canvas.context, shaderType); /* Previous binding. */
+  GLInterface.shaderSource(Canvas.context, shader, source);
+  GLInterface.compileShader(Canvas.context, shader);
 
   /* Verify shader compilation succeeded. */
-  if (getBooleanShaderParameter(Canvas.context, shader, GLConsts.compileStatus)) {
+  if (GLInterface.getBooleanShaderParameter(Canvas.context, shader, GLConsts.compileStatus)) {
     shader;
   } else {
-    let log = getShaderInfoLog(Canvas.context, shader); 
-    deleteShader(Canvas.context, shader);
+    let log = GLInterface.getShaderInfoLog(Canvas.context, shader); 
+    GLInterface.deleteShader(Canvas.context, shader);
     raise(ShaderCompileError(log));
   }
 }
 
 let create = (vSource, fSource) => {
-  let vShader = createShader(vSource, GLConsts.vertexShader);
-  let fShader = createShader(fSource, GLConsts.fragmentShader);
-  let program = createProgram(Canvas.context);
-  attachShader(Canvas.context, program, vShader);
-  attachShader(Canvas.context, program, fShader);
-  linkProgram(Canvas.context, program);
+  let vertexShader = createShader(vSource, GLConsts.vertexShader);
+  let fragmentShader = createShader(fSource, GLConsts.fragmentShader);
+  let program = GLInterface.createProgram(Canvas.context);
+  GLInterface.attachShader(Canvas.context, program, vertexShader);
+  GLInterface.attachShader(Canvas.context, program, fragmentShader);
+  GLInterface.linkProgram(Canvas.context, program);
 
   /* Verify the shader program linking succeeded. */
-  if (getBooleanProgramParameter(Canvas.context, program, GLConsts.linkStatus)) {
-    detachShader(Canvas.context, program, vShader);
-    detachShader(Canvas.context, program, fShader);
-    program;
+  if (GLInterface.getBooleanProgramParameter(Canvas.context, program, GLConsts.linkStatus)) {
+    GLInterface.detachShader(Canvas.context, program, vertexShader);
+    GLInterface.detachShader(Canvas.context, program, fragmentShader);
+    {
+      program,
+      vertexShader,
+      fragmentShader
+    };
   } else {
-    let log = getProgramInfoLog(Canvas.context, program);
-    deleteProgram(Canvas.context, program);
-    deleteShader(Canvas.context, vShader);
-    deleteShader(Canvas.context, fShader);
+    let log = GLInterface.getProgramInfoLog(Canvas.context, program);
+    GLInterface.deleteProgram(Canvas.context, program);
+    GLInterface.deleteShader(Canvas.context, vertexShader);
+    GLInterface.deleteShader(Canvas.context, fragmentShader);
     raise(ProgramLinkError(log));
   }
 }
 
-let use = useProgram(Canvas.context);
+let use = p => GLInterface.useProgram(Canvas.context, p.program);
 
-let getAttrib = getAttribLocation(Canvas.context);
+let getAttrib = p => GLInterface.getAttribLocation(Canvas.context, p.program);

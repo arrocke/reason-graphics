@@ -1,7 +1,7 @@
 exception WebGLNotSupported;
 
 /** The WebGL context for the canvas. */
-let context: GLTypes.context;
+let context: GLInterface.context;
 
 /** The width of the canvas in pixels. */
 let width: unit => int;

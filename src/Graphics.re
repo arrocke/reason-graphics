@@ -9,10 +9,6 @@ module type ApplicationType = (App: ApplicationOptionsType) => {
   let start: unit => unit;
 };
 
-[@bs.send] external clearColor : (GLTypes.context, float, float, float, float) => unit = "clearColor";
-[@bs.send] external clear : (GLTypes.context, int) => unit = "clear";
-[@bs.send] external viewport : (GLTypes.context, int, int, int, int) => unit = "viewport";
-
 module Application = (App: ApplicationOptionsType) => {
   [@bs.val] external requestAnimationFrame : (float => unit) => unit = "";
 
@@ -23,9 +19,9 @@ module Application = (App: ApplicationOptionsType) => {
     let newState = App.update(state, dt);
 
     /* Clear the screen and update the view port on every update. */
-    viewport(Canvas.context, 0, 0, Canvas.width(), Canvas.height());
-    clearColor(ctx, 0.0, 0.0, 0.0, 1.0);
-    clear(ctx, GLConsts.colorBufferBit);
+    GLInterface.viewport(Canvas.context, 0, 0, Canvas.width(), Canvas.height());
+    GLInterface.clearColor(ctx, 0.0, 0.0, 0.0, 1.0);
+    GLInterface.clear(ctx, GLConsts.colorBufferBit);
 
 
     App.draw(newState);

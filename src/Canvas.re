@@ -12,7 +12,7 @@ exception WebGLNotSupported;
 [@bs.scope "document.body"] [@bs.val] external appendCanvas : t => unit = "appendChild";
 [@bs.send] external setCanvasStyle : (t, [@bs.as "style"] _, string) => unit = "setAttribute";
 [@bs.scope "document.body"] [@bs.val] external setBodyStyle : ([@bs.as "style"] _, string) => unit = "setAttribute";
-[@bs.send] external getContext : (t, string) => option(GLTypes.context) = "getContext";
+[@bs.send] external getContext : (t, string) => option(GLInterface.context) = "getContext";
 
 /* Create the canvas and insert into the page. */
 let canvas = createCanvas();
