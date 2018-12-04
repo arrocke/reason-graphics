@@ -8,7 +8,7 @@
     "watch:wp": "webpack -w && fg",
     "clean": "bsb -clean-world",
     "test": "npm run compile && jest --testRegex _test\\.js",
-    "serve": "http-server ./ -p 8600 -c-1 -o"
+    "serve": "http-server ./dist -p 8600 -c-1 -o"
   },
   "keywords": [
     "BuckleScript"
