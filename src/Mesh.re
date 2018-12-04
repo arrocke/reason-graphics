@@ -1,5 +1,3 @@
-type typedarray;
-
 type t = {
   vertices: list(Point3.t),
   vertexCount: int,

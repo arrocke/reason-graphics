@@ -1,5 +1,7 @@
 type t;
 
+exception NoInverse;
+
 let identity: t;
 
 let translation: (float, float, float) => t;
@@ -16,4 +18,10 @@ let transpose: (t) => t;
 
 let at: (t, int, int) => float;
 
-let array_of_matrix: t => array(float);
+let toTypedarray: t => GLInterface.typedarray;
+let create: (
+  float, float, float, float,
+  float, float, float, float,
+  float, float, float, float,
+  float, float, float, float
+) => t;
