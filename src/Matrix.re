@@ -236,7 +236,7 @@ let perspective = (fovy, aspect, near, far) => {
   frustrum(-.xmax, xmax, -.ymax, ymax, near, far);
 }
 
-let toTypedarray = m => m |> transpose |> Array.copy |> GLInterface.createTypedArray;
+let toTypedarray = m => m |> transpose |> Array.copy |> TypedArray.createFloat32Array;
 
 let create =
   (m00, m01, m02, m03,
