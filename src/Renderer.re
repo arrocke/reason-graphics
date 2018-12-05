@@ -4,13 +4,19 @@ type t = {
 
 let defaultVertexSource = {|
   attribute vec3 position;
-
+  attribute vec3 normal;
+  
   uniform mat4 ModelMatrix; 
   uniform mat4 ViewMatrix; 
   uniform mat4 ProjectionMatrix; 
   uniform mat4 NormalMatrix; 
 
+  varying vec3 N;
+  varying vec3 v;
+
   void main() {
+    v = (ViewMatrix * ModelMatrix * vec4(position, 1)).xyz;
+    N = normalize((NormalMatrix * vec4(normal, 0)).xyz);
     gl_Position	= ProjectionMatrix * ViewMatrix * ModelMatrix * vec4(position, 1); 
   }
 |};

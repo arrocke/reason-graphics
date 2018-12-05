@@ -14,9 +14,17 @@ module TestApp = Graphics.Application({
         Point3.create(0., 0., 40.0),
         Point3.create(0., 4.0, 40.0),
         Point3.create(4.0, 0.0, 40.0),
+        Point3.create(4.0, 4.0, 40.0),
       ],
       ~indices=[
-        0, 1, 2
+        0, 1, 2,
+        2, 1, 3
+      ],
+      ~normals=[
+        Vector3.create(0.0, 0.0, 1.0),
+        Vector3.create(0.0, 0.0, 1.0),
+        Vector3.create(0.0, 0.0, 1.0),
+        Vector3.create(0.0, 0.0, 1.0)
       ],
     ()),
     p: 0.0
