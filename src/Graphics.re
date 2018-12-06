@@ -21,7 +21,7 @@ module Application = (App: ApplicationOptionsType) => {
     /* Clear the screen and update the view port on every update. */
     GLInterface.viewport(Canvas.context, 0, 0, Canvas.width(), Canvas.height());
     GLInterface.clearColor(ctx, 0.0, 0.0, 0.0, 1.0);
-    GLInterface.clear(ctx, GLConsts.colorBufferBit);
+    GLInterface.clear(ctx, GLConsts.colorBufferBit lor GLConsts.depthBufferBit);
 
 
     App.draw(newState);
@@ -32,6 +32,10 @@ module Application = (App: ApplicationOptionsType) => {
     /* Setup canvas and context for rendering. */
     Canvas.resize();
     let state = App.setup();
+
+    GLInterface.enable(Canvas.context, GLConsts.cullFace);
+    GLInterface.cullFace(Canvas.context, GLConsts.back);
+    GLInterface.enable(Canvas.context, GLConsts.depthTest);
 
     /* Run application main loop. */
     /* It receives the previous timestamp from the last animation frame. */
