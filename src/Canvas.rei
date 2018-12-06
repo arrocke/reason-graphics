@@ -1,16 +1,36 @@
-exception WebGLNotSupported;
+type t;
 
-/** The WebGL context for the canvas. */
-let context: GLInterface.context;
+/**
+ * Get the aspect ratio of a canvase element.
+ */
+let aspectRatio: t => float;
 
-/** The width of the canvas in pixels. */
-let width: unit => int;
+/**
+ * Create a fullscreen canvas element.
+ */
+let create: unit => t;
 
-/** The height of the canvas in pixels. */
-let height: unit => int;
+/**
+ * Find a canvas element by its CSS selector.
+ */
+let find: string => option(t);
 
-/** The aspect ratio of the cavnas. */
-let aspect: unit => float;
+/**
+ * Get a WebGL context from a canvas element.
+ */
+let getContext: t => GL.context;
 
-/** Resize a canvas to its client width and height */
-let resize: unit => unit;
+/**
+ * Get the height of a canvas element..
+ */
+let height: t => int;
+
+/**
+ * Resize a canvas' drawing dimensions to match the element's size.
+ */
+let resize: t => unit;
+
+/**
+ * Get the width of a canvas element.
+ */
+let width: t => int;

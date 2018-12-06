@@ -8,28 +8,35 @@ type t = pri {
 
 exception WebGLNotSupported;
 
+[@bs.scope "document"] [@bs.val] external querySelector : (string) => Js.Nullable.t(t) = "querySelector";
 [@bs.scope "document"] [@bs.val] external createCanvas : ([@bs.as "canvas"] _, unit) => t = "createElement";
 [@bs.scope "document.body"] [@bs.val] external appendCanvas : t => unit = "appendChild";
-[@bs.send] external setCanvasStyle : (t, [@bs.as "style"] _, string) => unit = "setAttribute";
 [@bs.scope "document.body"] [@bs.val] external setBodyStyle : ([@bs.as "style"] _, string) => unit = "setAttribute";
-[@bs.send] external getContext : (t, string) => option(GLInterface.context) = "getContext";
+[@bs.send] external setCanvasStyle : (t, [@bs.as "style"] _, string) => unit = "setAttribute";
+[@bs.send] external getWebGLContext : (t, [@bs.as "webgl"] _) => Js.Nullable.t(GL.context) = "getContext";
 
-/* Create the canvas and insert into the page. */
-let canvas = createCanvas();
-setCanvasStyle(canvas, "position: absolute; width: 100%; height: 100%;")
-setBodyStyle("margin: 0; padding: 0");
-appendCanvas(canvas);
-
-let context = switch(getContext(canvas, "webgl")) {
-| Some(ctx) => ctx
-| None => raise(WebGLNotSupported)
+let create = () => {
+  let canvas = createCanvas();
+  setCanvasStyle(canvas, "position: absolute; width: 100%; height: 100%;");
+  setBodyStyle("margin: 0; padding: 0");
+  appendCanvas(canvas);
+  canvas;
 };
 
-let resize = () => {
+let getContext = canvas => {
+  switch(getWebGLContext(canvas) |> Js.Nullable.toOption) {
+  | Some(ctx) => ctx
+  | None => raise(WebGLNotSupported)
+  };
+};
+
+let find = selector =>  querySelector(selector) |> Js.Nullable.toOption; 
+
+let resize = canvas => {
   heightSet(canvas, clientHeightGet(canvas));
   widthSet(canvas, clientWidthGet(canvas));
 };
 
-let width = () => widthGet(canvas);
-let height = () => heightGet(canvas);
-let aspect = () => float_of_int(width()) /. float_of_int(height());
+let width = canvas => widthGet(canvas);
+let height = canvas => heightGet(canvas);
+let aspectRatio = canvas => (width(canvas) |> float_of_int) /. (height(canvas) |> float_of_int);
