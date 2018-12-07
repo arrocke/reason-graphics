@@ -27,7 +27,7 @@ module Initialize(Options: {
   module Matrix = Matrix;
 
   /* Start the application with its event loop. */
-  let start = (startState: 'a, update: ('a, float) => 'a, draw: 'a => 'a) => {
+  let start = (startState, update, draw) => {
     /* Setup context for rendering. */
     GL.enable(context, GLConsts.cullFace);
     GL.cullFace(context, GLConsts.back);
