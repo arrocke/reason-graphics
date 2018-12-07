@@ -7,6 +7,6 @@ let create: (string, string) => t;
 /* Use a program to render objects. */
 let use: t => unit;
 
-let getAttrib: (t, string) => GLInterface.attrib;
+let getAttrib: (t, string) => GL.attrib;
 
 let setMatrix4Uniform: (t, string, Matrix.t) => unit;

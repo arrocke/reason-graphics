@@ -1,9 +1,5 @@
-/* module GL = GL.CreateInterface({
+module Graphics = Graphics.Initialize({
   let canvasSelector = None;
 });
 
-GL.Bindings.clear(GL.Consts.colorBufferBit); */
-
-let canvas = Canvas.create();
-let context = Canvas.getContext(canvas);
-context##clear(GLConsts.colorBufferBit);
+Graphics.start((), ((), dt) => { Js.log(dt); }, () => { (); });

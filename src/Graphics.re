@@ -1,0 +1,63 @@
+[@bs.val] external requestAnimationFrame : (float => unit) => unit = "";
+
+module Initialize(Options: {
+  let canvasSelector: option(string)
+}) = {
+  exception CanvasNotFound;
+  exception WebGLNotSupported;
+
+  /* Find or create a canvas */
+  let canvas = switch(Options.canvasSelector) {
+  | Some(selector) => switch(Canvas.find(selector)) {
+    | Some(canvas) => canvas;
+    | None => raise(CanvasNotFound);
+    }
+  | None => Canvas.create()
+  };
+
+  /* Get the context, if supported. */
+  let context = switch(Canvas.getContext(canvas)) {
+    | Some(ctx) => ctx
+    | None => raise(WebGLNotSupported)
+    };
+
+  /* Load graphics modules. */
+  module Point3 = Point3;
+  module Vector3 = Vector3;
+  module Matrix = Matrix;
+
+  /* Start the application with its event loop. */
+  let start = (startState: 'a, update: ('a, float) => 'a, draw: 'a => 'a) => {
+    /* Setup context for rendering. */
+    GL.enable(context, GLConsts.cullFace);
+    GL.cullFace(context, GLConsts.back);
+    GL.enable(context, GLConsts.depthTest);
+
+    /* Update method that runs every on every animation frame. */
+    let loopStep = (state, dt) => {
+      /* Update the simulation. */
+      let newState = update(state, dt);
+
+      /* Clear the screen and update the view port. */
+      Canvas.resize(canvas);
+      GL.viewport(context, 0, 0, Canvas.width(canvas), Canvas.height(canvas));
+      GL.clearColor(context, 0.0, 0.0, 0.0, 1.0);
+      GL.clear(context, GLConsts.colorBufferBit lor GLConsts.depthBufferBit);
+
+      draw(newState);
+    };
+
+    /* Run application main loop. */
+    /* It receives the previous timestamp from the last animation frame. */
+    /*   and the current timestamp from the current animation frame. */
+    let rec step = (state, lastTimestamp, currentTimestamp) => {
+      let newState = loopStep(state, currentTimestamp -. lastTimestamp);
+      requestAnimationFrame(step(newState, currentTimestamp));
+    };
+    /* First frame has zero elapsed time. */
+    requestAnimationFrame((currentTimestamp) => {
+      let newState = loopStep(startState, 0.0);
+      requestAnimationFrame(step(newState, currentTimestamp));
+    });
+  };
+};

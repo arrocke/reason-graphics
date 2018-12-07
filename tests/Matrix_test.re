@@ -1,4 +1,4 @@
-/* open Jest;
+open Jest;
 open Expect;
 
 describe("identity", () => {
@@ -190,4 +190,3 @@ describe("perspective", () => {
     expect(Matrix.perspective(60.0, aspect, 0.1, 50.0)) |> toEqual(perspectiveMatrix);
   });
 });
-*/
