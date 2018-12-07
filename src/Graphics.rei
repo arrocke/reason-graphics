@@ -4,6 +4,7 @@ module Initialize(Options: {
   module Matrix = Matrix;
   module Point3 = Point3;
   module Vector3 = Vector3;
+  module ShaderProgram: ShaderProgram.Type;
 
   let start: (
     'a,
