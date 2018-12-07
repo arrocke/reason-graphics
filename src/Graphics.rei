@@ -10,8 +10,8 @@ module Initialize(Options: {
   let context: GL.context;
   let canvas: Canvas.t;
 
-  let start: (
-    'a,
+  let loop: (
+    unit => 'a,
     ('a, float) => 'a,
     'a => 'a
   ) => unit;

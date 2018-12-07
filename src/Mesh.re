@@ -1,5 +1,4 @@
 type t = {
-  context: GL.context,
   vertices: list(Point3.t),
   vertexCount: int,
   normals: list(Vector3.t),
@@ -13,17 +12,16 @@ type t = {
 };
 
 
-let create = (context, ~vertices=[], ~normals=[], ~indices=[], ()) => {
-  context,
+let create = (~vertices=[], ~normals=[], ~indices=[], ()) => {
   vertices: List.rev(vertices),
   vertexCount: List.length(vertices),
   normals: List.rev(normals),
   normalCount: List.length(normals),
   indices: List.rev(indices),
   indexCount: List.length(indices),
-  vertexBuffer: GL.createBuffer(context),
-  normalsBuffer: GL.createBuffer(context),
-  indexBuffer: GL.createBuffer(context),
+  vertexBuffer: GL.createBuffer(GL.context()),
+  normalsBuffer: GL.createBuffer(GL.context()),
+  indexBuffer: GL.createBuffer(GL.context()),
   dirty: true
 };
 
@@ -75,8 +73,8 @@ let updateGL = (mesh, program) => {
     (verts, v) => [Point3.z(v), Point3.y(v), Point3.x(v), ...verts],
     [], mesh.vertices)
     |> List.rev |> Array.of_list |> TypedArray.createFloat32Array;
-  GL.bindBuffer(mesh.context, GLConsts.arrayBuffer, mesh.vertexBuffer);
-  GL.bufferData(mesh.context, GLConsts.arrayBuffer, vertexArray, GLConsts.staticDraw);
+  GL.bindBuffer(GL.context(), GLConsts.arrayBuffer, mesh.vertexBuffer);
+  GL.bufferData(GL.context(), GLConsts.arrayBuffer, vertexArray, GLConsts.staticDraw);
 
   /* Load normals */
   if (mesh.normalCount > 0) {
@@ -84,29 +82,29 @@ let updateGL = (mesh, program) => {
       (verts, v) => [Vector3.z(v), Vector3.y(v), Vector3.x(v), ...verts],
     [], mesh.normals)
     |> List.rev |> Array.of_list |> TypedArray.createFloat32Array;
-    GL.bindBuffer(mesh.context, GLConsts.arrayBuffer, mesh.normalsBuffer);
-    GL.bufferData(mesh.context, GLConsts.arrayBuffer, normalArray, GLConsts.staticDraw);
+    GL.bindBuffer(GL.context(), GLConsts.arrayBuffer, mesh.normalsBuffer);
+    GL.bufferData(GL.context(), GLConsts.arrayBuffer, normalArray, GLConsts.staticDraw);
   }
 
   /* Load indices */
   if (mesh.indexCount > 0) {
     let indexArray = mesh.indices |> List.rev |> Array.of_list |> TypedArray.createUint16Array;
-    GL.bindBuffer(mesh.context, GLConsts.elementArrayBuffer, mesh.indexBuffer);
-    GL.bufferData(mesh.context, GLConsts.elementArrayBuffer, indexArray, GLConsts.staticDraw);
+    GL.bindBuffer(GL.context(), GLConsts.elementArrayBuffer, mesh.indexBuffer);
+    GL.bufferData(GL.context(), GLConsts.elementArrayBuffer, indexArray, GLConsts.staticDraw);
   };
 
   /* Enable the position attribute. */
   let vertexAttrib = ShaderProgram.getAttrib(program, "position");
-  GL.bindBuffer(mesh.context, GLConsts.arrayBuffer, mesh.vertexBuffer);
-  GL.enableVertexAttribArray(mesh.context, vertexAttrib);
-  GL.vertexAttribPointer(mesh.context, vertexAttrib, 3, GLConsts.float, false, 0, 0);
+  GL.bindBuffer(GL.context(), GLConsts.arrayBuffer, mesh.vertexBuffer);
+  GL.enableVertexAttribArray(GL.context(), vertexAttrib);
+  GL.vertexAttribPointer(GL.context(), vertexAttrib, 3, GLConsts.float, false, 0, 0);
 
   /* Enable the normal attribute. */
   if (mesh.normalCount > 0) {
     let normalAttrib = ShaderProgram.getAttrib(program, "normal");
-    GL.bindBuffer(mesh.context, GLConsts.arrayBuffer, mesh.normalsBuffer);
-    GL.enableVertexAttribArray(mesh.context, normalAttrib);
-    GL.vertexAttribPointer(mesh.context, normalAttrib, 3, GLConsts.float, false, 0, 0);
+    GL.bindBuffer(GL.context(), GLConsts.arrayBuffer, mesh.normalsBuffer);
+    GL.enableVertexAttribArray(GL.context(), normalAttrib);
+    GL.vertexAttribPointer(GL.context(), normalAttrib, 3, GLConsts.float, false, 0, 0);
   };
 
   {
@@ -123,10 +121,10 @@ let draw = (mesh, program) => {
       mesh;
     }
   if (updatedMesh.indexCount > 0) {
-    GL.bindBuffer(mesh.context, GLConsts.elementArrayBuffer, updatedMesh.indexBuffer);
-    GL.drawElements(mesh.context, GLConsts.triangles, updatedMesh.indexCount, GLConsts.unsignedShort, 0);
+    GL.bindBuffer(GL.context(), GLConsts.elementArrayBuffer, updatedMesh.indexBuffer);
+    GL.drawElements(GL.context(), GLConsts.triangles, updatedMesh.indexCount, GLConsts.unsignedShort, 0);
   } else {
-    GL.drawArrays(mesh.context, GLConsts.triangles, 0, updatedMesh.vertexCount);
+    GL.drawArrays(GL.context(), GLConsts.triangles, 0, updatedMesh.vertexCount);
   }
   updatedMesh;
 }

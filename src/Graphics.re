@@ -21,6 +21,8 @@ module Initialize(Options: {
     | None => raise(WebGLNotSupported)
     };
 
+  GL.setContext(context);
+
   /* Load graphics modules. */
   module Point3 = Point3;
   module Vector3 = Vector3;
@@ -29,11 +31,15 @@ module Initialize(Options: {
   module Mesh = Mesh;
 
   /* Start the application with its event loop. */
-  let start = (startState, update, draw) => {
+  let loop = (setup, update, draw) => {
     /* Setup context for rendering. */
     GL.enable(context, GLConsts.cullFace);
     GL.cullFace(context, GLConsts.back);
     GL.enable(context, GLConsts.depthTest);
+    Canvas.resize(canvas);
+    GL.viewport(context, 0, 0, Canvas.width(canvas), Canvas.height(canvas));
+
+    let startState = setup();
 
     /* Update method that runs every on every animation frame. */
     let loopStep = (state, dt) => {
@@ -41,8 +47,6 @@ module Initialize(Options: {
       let newState = update(state, dt);
 
       /* Clear the screen and update the view port. */
-      Canvas.resize(canvas);
-      GL.viewport(context, 0, 0, Canvas.width(canvas), Canvas.height(canvas));
       GL.clearColor(context, 0.0, 0.0, 0.0, 1.0);
       GL.clear(context, GLConsts.colorBufferBit lor GLConsts.depthBufferBit);
 

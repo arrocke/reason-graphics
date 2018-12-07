@@ -1,5 +1,4 @@
 type t = {
-  context: GL.context,
   program: ShaderProgram.t
 };
 
@@ -66,9 +65,8 @@ let defaultFragmentSource = {|
   }
 |};
 
-let default = context => {
-  context,
-  program: ShaderProgram.create(context, defaultVertexSource, defaultFragmentSource)
+let default = () => {
+  program: ShaderProgram.create(defaultVertexSource, defaultFragmentSource)
 };
 
 let use = (renderer, model, view, projection) => {

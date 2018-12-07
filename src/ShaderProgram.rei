@@ -2,7 +2,7 @@
 type t;
 
 /* Create a program with the given vertex shader and fragment shader. */
-let create: (GL.context, string, string) => t;
+let create: (string, string) => t;
 
 /* Use a program to render objects. */
 let use: t => unit;

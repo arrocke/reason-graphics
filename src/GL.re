@@ -11,6 +11,17 @@ module type OptionsType = {
   let context: context;
 };
 
+exception NoCurrentContext;
+
+let currentContext: ref(option(context)) = ref(None);
+let context = () => {
+  switch(currentContext^) {
+  | Some(context) => context;
+  | None => raise(NoCurrentContext);
+  };
+}
+let setContext = context => currentContext := Some(context);
+
 [@bs.send] external attachShader: (context, program, shader) => unit = "";
 [@bs.send] external bindBuffer: (context, enum, buffer) => unit = "";
 [@bs.send] external bufferData: (context, enum, TypedArray.typedarray, enum) => unit = "";

@@ -6,15 +6,14 @@ type state = {
   t: float
 };
 
-module TestApp = Graphics.Initialize({
+module Graphics = Graphics.Initialize({
   let canvasSelector = None;
 });
 
-let startState = {
-  renderer: Renderer.default(TestApp.context),
-  perspective: Matrix.perspective(60.0, Canvas.aspectRatio(TestApp.canvas), 0.1, 50.0),
+let setup = () => {
+  renderer: Renderer.default(),
+  perspective: Matrix.perspective(60.0, Canvas.aspectRatio(Graphics.canvas), 0.1, 50.0),
   m: Mesh.create(
-    TestApp.context,
     ~vertices=[
       Point3.create(0.0, 0.0, 0.0),
       Point3.create(1.0, 0.0, 0.0),
@@ -88,10 +87,10 @@ let startState = {
 
 let update = (state, dt) => {
   ...state,
-  p: if (state.p >= 9.0) {
-    -9.0;
+  p: if (state.p >= 8.0) {
+    -8.0;
   } else {
-    state.p +. dt /. 800.0;
+    state.p +. dt /. 700.0;
   },
   t: state.t +. dt /. 1000.0
 };
@@ -110,4 +109,4 @@ let draw = (state) => {
   };
 };
 
-TestApp.start(startState, update, draw);
+Graphics.loop(setup, update, draw);
