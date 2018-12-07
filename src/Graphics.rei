@@ -4,7 +4,11 @@ module Initialize(Options: {
   module Matrix = Matrix;
   module Point3 = Point3;
   module Vector3 = Vector3;
-  module ShaderProgram: ShaderProgram.Type;
+  module ShaderProgram = ShaderProgram;
+  module Mesh = Mesh;
+
+  let context: GL.context;
+  let canvas: Canvas.t;
 
   let start: (
     'a,

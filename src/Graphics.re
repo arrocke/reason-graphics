@@ -21,15 +21,12 @@ module Initialize(Options: {
     | None => raise(WebGLNotSupported)
     };
 
-  module GraphicsOptions {
-    let context = context;
-  };
-
   /* Load graphics modules. */
   module Point3 = Point3;
   module Vector3 = Vector3;
   module Matrix = Matrix;
-  module ShaderProgram = ShaderProgram.Initialize(GraphicsOptions);
+  module ShaderProgram = ShaderProgram;
+  module Mesh = Mesh;
 
   /* Start the application with its event loop. */
   let start = (startState, update, draw) => {

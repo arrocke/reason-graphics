@@ -1,4 +1,5 @@
 type t = {
+  context: GL.context,
   program: ShaderProgram.t
 };
 
@@ -65,17 +66,18 @@ let defaultFragmentSource = {|
   }
 |};
 
-let default = () => {
-  program: ShaderProgram.create(defaultVertexSource, defaultFragmentSource)
+let default = context => {
+  context,
+  program: ShaderProgram.create(context, defaultVertexSource, defaultFragmentSource)
 };
 
 let use = (renderer, model, view, projection) => {
   ShaderProgram.use(renderer.program);
   let normalMatrix = Matrix.multiply(view, model) |> Matrix.inverse |> Matrix.transpose;
-  ShaderProgram.setMatrix4Uniform(renderer.program, "ModelMatrix", model);
-  ShaderProgram.setMatrix4Uniform(renderer.program, "ViewMatrix", view);
-  ShaderProgram.setMatrix4Uniform(renderer.program, "ProjectionMatrix", projection);
-  ShaderProgram.setMatrix4Uniform(renderer.program, "NormalMatrix", normalMatrix);
+  ShaderProgram.setMatrixUniform(renderer.program, "ModelMatrix", model);
+  ShaderProgram.setMatrixUniform(renderer.program, "ViewMatrix", view);
+  ShaderProgram.setMatrixUniform(renderer.program, "ProjectionMatrix", projection);
+  ShaderProgram.setMatrixUniform(renderer.program, "NormalMatrix", normalMatrix);
 };
 
 let drawMesh = (renderer, model, view, projection, mesh) => {
