@@ -127,4 +127,4 @@ let draw = (mesh, program) => {
     GL.drawArrays(GL.context(), GLConsts.triangles, 0, updatedMesh.vertexCount);
   }
   updatedMesh;
-}
+};
